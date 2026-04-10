@@ -2,7 +2,7 @@ import streamlit as st
 from groq import Groq
 
 # Title
-st.title("🤖 Aditya's AI Chatbot")
+st.title("🤖 AI Chatbot")
 
 # Create client
 client = Groq(api_key=st.secrets["GROQ_API_KEY"])
