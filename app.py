@@ -1,17 +1,19 @@
 import streamlit as st
 from groq import Groq
-import os
-
-# Load API key from Streamlit secrets
-client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
 # Title
-st.title("🤖 AI Chatbot")
+st.title("🤖 Aditya's AI Chatbot")
+
+# Create client
+client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
 # Initialize memory
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = [
-        {"role": "system", "content": "You are a helpful AI assistant."}
+        {
+            "role": "system",
+            "content": "You are a smart, concise AI assistant who explains clearly like a teacher."
+        }
     ]
 
 # Display chat history
@@ -23,33 +25,38 @@ for message in st.session_state.chat_history:
 # User input
 user_input = st.chat_input("Type your message...")
 
-if user_input:
-    # Add user message
-    st.session_state.chat_history.append(
-        {"role": "user", "content": user_input}
-    )
+# Handle user input
+if user_input and user_input.strip() != "":
+    
+    # Store user message
+    st.session_state.chat_history.append({
+        "role": "user",
+        "content": user_input
+    })
 
-    # Display user message
+    # Show user message
     with st.chat_message("user"):
         st.markdown(user_input)
 
-    # Get AI response
     try:
-        response = client.chat.completions.create(
-            model="llama-3.1-8b-instant",
-            messages=st.session_state.chat_history
-        )
+        # Loading indicator
+        with st.spinner("Thinking..."):
+            response = client.chat.completions.create(
+                model="llama-3.1-8b-instant",
+                messages=st.session_state.chat_history
+            )
 
         bot_reply = response.choices[0].message.content
 
-        # Display bot reply
+        # Show bot reply
         with st.chat_message("assistant"):
             st.markdown(bot_reply)
 
-        # Save bot reply
-        st.session_state.chat_history.append(
-            {"role": "assistant", "content": bot_reply}
-        )
+        # Store bot reply
+        st.session_state.chat_history.append({
+            "role": "assistant",
+            "content": bot_reply
+        })
 
     except Exception as e:
         st.error(f"Error: {e}")
